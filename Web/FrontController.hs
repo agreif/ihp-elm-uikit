@@ -9,7 +9,7 @@ import Web.Controller.Static
 
 instance FrontController WebApplication where
     controllers = 
-        [ startPage WelcomeAction
+        [ catchAll WelcomeAction
         -- Generator Marker
         ]
 
