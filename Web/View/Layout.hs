@@ -32,12 +32,15 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
 stylesheets :: Html
 stylesheets = [hsx|
         <link rel="stylesheet" href={assetPath "/app.css"}/>
+        <link rel="stylesheet" href={assetPath "/uikit/css/uikit.min.css"}/>
     |]
 
 scripts :: Html
 scripts = [hsx|
         {when isDevelopment devScripts}
         <script src={assetPath "/elm/index.js"}></script>
+        <script src={assetPath "/uikit/js/uikit.min.js"}></script>
+        <script src={assetPath "/uikit/js/uikit-icons.min.js"}></script>
     |]
 
 devScripts :: Html
