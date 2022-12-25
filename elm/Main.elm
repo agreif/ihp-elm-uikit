@@ -7,6 +7,7 @@ import ErrorPage exposing (..)
 import HomePage exposing (..)
 import Http
 import Json.Decode as J
+import LoginPage exposing (..)
 import ProfilePage exposing (..)
 import Url
 
@@ -39,6 +40,7 @@ type alias Model =
 
 type Page
     = EmptyPage
+    | LoginPage LoginPageData
     | HomePage HomePageData
     | ProfilePage ProfilePageData
     | ErrorPage String
@@ -67,7 +69,7 @@ update msg model =
         UrlChanged pageUrl ->
             ( model, fetchData pageUrl )
 
-        GotProfileData result ->
+        GotProfilePageData result ->
             case result of
                 Ok data ->
                     ( { model | page = ProfilePage data }, Cmd.none )
@@ -75,7 +77,7 @@ update msg model =
                 _ ->
                     ( { model | page = ErrorPage "http error" }, Cmd.none )
 
-        GotHomeData result ->
+        GotHomePageData result ->
             case result of
                 Ok data ->
                     ( { model | page = HomePage data }, Cmd.none )
@@ -100,6 +102,9 @@ subscriptions _ =
 view : Model -> Browser.Document Msg
 view model =
     case model.page of
+        LoginPage data ->
+            loginPageView data
+
         HomePage data ->
             homePageView data
 

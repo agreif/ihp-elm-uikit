@@ -6,10 +6,14 @@ import Web.View.Layout (defaultLayout)
 
 -- Controller Imports
 import Web.Controller.Static
+import Web.Controller.HomePage
+import Web.Controller.ProfilePage
 
 instance FrontController WebApplication where
-    controllers = 
-        [ catchAll WelcomeAction
+    controllers =
+        [ parseRoute @HomePageController
+        , parseRoute @ProfilePageController
+        , catchAll WelcomeAction
         -- Generator Marker
         ]
 

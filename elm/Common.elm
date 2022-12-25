@@ -1,6 +1,7 @@
 module Common exposing
     ( HomeData
     , HomePageData
+    , LoginPageData
     , Msg(..)
     , NavData
     , ProfilePageData
@@ -28,8 +29,40 @@ import Url
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | GotProfileData (Result Http.Error ProfilePageData)
-    | GotHomeData (Result Http.Error HomePageData)
+    | GotProfilePageData (Result Http.Error ProfilePageData)
+    | GotHomePageData (Result Http.Error HomePageData)
+
+
+
+-- DATA - LOGIN
+
+
+type alias LoginPageData =
+    { title : String
+    , nav : NavData
+    , login : LoginData
+    }
+
+
+type alias LoginData =
+    { login : String
+    , password : String
+    }
+
+
+loginPageDecoder : J.Decoder LoginPageData
+loginPageDecoder =
+    J.map3 LoginPageData
+        (J.field "title" J.string)
+        (J.field "nav" navDecoder)
+        (J.field "page" (J.field "login" loginDecoder))
+
+
+loginDecoder : J.Decoder LoginData
+loginDecoder =
+    J.map2 LoginData
+        (J.field "login" J.string)
+        (J.field "password" J.string)
 
 
 
@@ -195,16 +228,14 @@ fetchData pageUrl =
     case pageUrl.path of
         "/profile" ->
             Http.get
-                { url =
-                    "https://raw.githubusercontent.com/agreif/phx-elm-uikit/master/sample_page_data/profile_page.json"
-                , expect = Http.expectJson GotProfileData profilePageDecoder
+                { url = "/GetProfilePageData"
+                , expect = Http.expectJson GotProfilePageData profilePageDecoder
                 }
 
         "/home" ->
             Http.get
-                { url =
-                    "https://raw.githubusercontent.com/agreif/phx-elm-uikit/master/sample_page_data/home_page.json"
-                , expect = Http.expectJson GotHomeData homePageDecoder
+                { url = "/GetHomePageData"
+                , expect = Http.expectJson GotHomePageData homePageDecoder
                 }
 
         _ ->
