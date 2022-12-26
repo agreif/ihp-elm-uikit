@@ -47,8 +47,8 @@ type Page
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
-    ( Model key EmptyPage, Nav.pushUrl key url.path )
+init flags pageUrl key =
+    ( Model key EmptyPage, Nav.pushUrl key pageUrl.path )
 
 
 
