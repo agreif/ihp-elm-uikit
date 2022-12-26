@@ -7,8 +7,8 @@ import IHP.ControllerPrelude
 
 -- NAV
 
-data ActiveNavItem =
-  ActiveHomePage
+data ActiveNavItem
+  = ActiveHomePage
   | ActiveProfilePage
   deriving Eq
 
