@@ -75,7 +75,7 @@ update msg model =
                     ( { model | page = ProfilePage data }, Cmd.none )
 
                 _ ->
-                    ( { model | page = ErrorPage "http error" }, Cmd.none )
+                    error model message
 
         GotHomePageData result ->
             case result of
@@ -83,7 +83,12 @@ update msg model =
                     ( { model | page = HomePage data }, Cmd.none )
 
                 Err message ->
-                    ( { model | page = ErrorPage "http error" }, Cmd.none )
+                    error model message
+
+
+error : Model -> String -> ( Model, Cmd Msg )
+error message =
+    ( { model | page = ErrorPage "http error" }, Cmd.none )
 
 
 
