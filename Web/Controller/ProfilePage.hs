@@ -10,12 +10,13 @@ theData :: PageData
 theData = PageData
   { title = "Profile Page"
   , nav = navData ActiveProfilePage
-  , page = PagesData
+  , body = BodyData
     { home = Nothing
-    , profile = Just $ GetProfilePageData
+    , profile = Just $ ProfileBodyData
       { text1 = "foo foo foo"
       , text2 = "bar bar"
       }
+    , login = Nothing
     }
   }
 

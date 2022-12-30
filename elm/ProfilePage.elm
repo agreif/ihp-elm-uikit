@@ -3,7 +3,7 @@ module ProfilePage exposing (profilePageView)
 import Browser
 import Common exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as Attr
 import Json.Decode as J
 
 

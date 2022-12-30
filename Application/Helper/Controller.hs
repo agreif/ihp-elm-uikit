@@ -4,12 +4,12 @@ import IHP.ControllerPrelude
 
 -- Here you can add functions which are available in all your controllers
 
-
 -- NAV
 
 data ActiveNavItem
   = ActiveHomePage
   | ActiveProfilePage
+  | ActiveLoginPage
   deriving Eq
 
 navData :: ActiveNavItem -> [NavItemData]
@@ -24,21 +24,27 @@ navData activeNavItem =
     , url = "/profile"
     , active = activeNavItem == ActiveProfilePage
     }
+  , NavItemData
+    { label = "Login"
+    , url = "/login"
+    , active = activeNavItem == ActiveLoginPage
+    }
   ]
-
-
 
 -- PAGE DATA
 
 data PageData = PageData
   { title :: Text
   , nav :: [NavItemData]
-  , page :: PagesData
+  , body :: BodyData
   }
 
 instance ToJSON PageData where
-  toJSON (PageData title nav page) =
-    object ["title" .= title, "nav" .= nav, "page" .= page]
+  toJSON PageData{..} =
+    object [ "title" .= title
+           , "nav" .= nav
+           , "body" .= body
+           ]
 
 data NavItemData = NavItemData
   { label :: Text
@@ -47,31 +53,58 @@ data NavItemData = NavItemData
   }
 
 instance ToJSON NavItemData where
-  toJSON (NavItemData label url active) =
-    object ["label" .= label, "url" .= url, "active" .= active]
+  toJSON NavItemData{..} =
+    object [ "label" .= label
+           , "url" .= url
+           , "active" .= active
+           ]
 
-data PagesData = PagesData
-  { home :: Maybe GetHomePageData
-  , profile :: Maybe GetProfilePageData
+data BodyData = BodyData
+  { home :: Maybe HomeBodyData
+  , profile :: Maybe ProfileBodyData
+  , login :: Maybe LoginBodyData
   }
 
-instance ToJSON PagesData where
-  toJSON (PagesData home profile) =
-    object ["home" .= home, "profile" .= profile]
+instance ToJSON BodyData where
+  toJSON BodyData{..} =
+    object [ "home" .= home
+           , "profile" .= profile
+           , "login" .= login
+           ]
 
-data GetHomePageData = GetHomePageData
-  { body :: Text
+-- LOGIN DATA
+
+data LoginBodyData = LoginBodyData
+  { login :: Text
+  , password :: Text
   }
 
-instance ToJSON GetHomePageData where
-  toJSON (GetHomePageData body) =
-    object ["body" .= body]
+instance ToJSON LoginBodyData where
+  toJSON LoginBodyData{..} =
+    object [ "login" .= login
+           , "password" .= password
+           ]
 
-data GetProfilePageData = GetProfilePageData
+-- HOME DATA
+
+data HomeBodyData = HomeBodyData
+  { text :: Text
+  }
+
+instance ToJSON HomeBodyData where
+  toJSON HomeBodyData{..} =
+    object ["text" .= text
+           ]
+
+-- PROFILE DATA
+
+data ProfileBodyData = ProfileBodyData
   { text1 :: Text
   , text2 :: Text
   }
 
-instance ToJSON GetProfilePageData where
-  toJSON (GetProfilePageData text1 text2) =
-    object ["text1" .= text1, "text2" .= text2]
+instance ToJSON ProfileBodyData where
+  toJSON ProfileBodyData{..} =
+    object [ "text1" .= text1
+           , "text2" .= text2
+           ]

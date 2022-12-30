@@ -1,6 +1,5 @@
 module Common exposing
-    ( HomeData
-    , HomePageData
+    ( HomePageData
     , LoginPageData
     , Msg(..)
     , NavData
@@ -10,6 +9,7 @@ module Common exposing
     , httpErrorToString
     , navDecoder
     , navView
+    , pageNoNavView
     , pageView
     , profilePageDecoder
     )
@@ -17,7 +17,7 @@ module Common exposing
 import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as Attr
 import Http
 import Json.Decode as J
 import Url
@@ -30,6 +30,7 @@ import Url
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | GotLoginPageData (Result Http.Error LoginPageData)
     | GotProfilePageData (Result Http.Error ProfilePageData)
     | GotHomePageData (Result Http.Error HomePageData)
 
@@ -41,11 +42,11 @@ type Msg
 type alias LoginPageData =
     { title : String
     , nav : NavData
-    , login : LoginData
+    , login : LoginBodyData
     }
 
 
-type alias LoginData =
+type alias LoginBodyData =
     { login : String
     , password : String
     }
@@ -56,12 +57,12 @@ loginPageDecoder =
     J.map3 LoginPageData
         (J.field "title" J.string)
         (J.field "nav" navDecoder)
-        (J.field "page" (J.field "login" loginDecoder))
+        (J.field "body" (J.field "login" loginBodyDecoder))
 
 
-loginDecoder : J.Decoder LoginData
-loginDecoder =
-    J.map2 LoginData
+loginBodyDecoder : J.Decoder LoginBodyData
+loginBodyDecoder =
+    J.map2 LoginBodyData
         (J.field "login" J.string)
         (J.field "password" J.string)
 
@@ -73,12 +74,12 @@ loginDecoder =
 type alias HomePageData =
     { title : String
     , nav : NavData
-    , home : HomeData
+    , home : HomeBodyData
     }
 
 
-type alias HomeData =
-    { body : String
+type alias HomeBodyData =
+    { text : String
     }
 
 
@@ -87,13 +88,13 @@ homePageDecoder =
     J.map3 HomePageData
         (J.field "title" J.string)
         (J.field "nav" navDecoder)
-        (J.field "page" (J.field "home" homeDecoder))
+        (J.field "body" (J.field "home" homeBodyDecoder))
 
 
-homeDecoder : J.Decoder HomeData
-homeDecoder =
-    J.map HomeData
-        (J.field "body" J.string)
+homeBodyDecoder : J.Decoder HomeBodyData
+homeBodyDecoder =
+    J.map HomeBodyData
+        (J.field "text" J.string)
 
 
 
@@ -103,11 +104,11 @@ homeDecoder =
 type alias ProfilePageData =
     { title : String
     , nav : NavData
-    , profile : ProfileData
+    , profile : ProfileBodyData
     }
 
 
-type alias ProfileData =
+type alias ProfileBodyData =
     { text1 : String
     , text2 : String
     }
@@ -118,12 +119,12 @@ profilePageDecoder =
     J.map3 ProfilePageData
         (J.field "title" J.string)
         (J.field "nav" navDecoder)
-        (J.field "page" (J.field "profile" profileDecoder))
+        (J.field "body" (J.field "profile" profileBodyDecoder))
 
 
-profileDecoder : J.Decoder ProfileData
-profileDecoder =
-    J.map2 ProfileData
+profileBodyDecoder : J.Decoder ProfileBodyData
+profileBodyDecoder =
+    J.map2 ProfileBodyData
         (J.field "text1" J.string)
         (J.field "text2" J.string)
 
@@ -161,24 +162,24 @@ navItemDecoder =
 navView : NavData -> Html Msg
 navView data =
     nav
-        [ class "uk-navbar-container uk-margin"
-        , attribute "uk-navbar" ""
+        [ Attr.class "uk-navbar-container uk-margin"
+        , Attr.attribute "uk-navbar" ""
         ]
         [ div
-            [ class "uk-navbar-left uk-margin-left"
+            [ Attr.class "uk-navbar-left uk-margin-left"
             ]
             [ a
-                [ class "uk-navbar-item uk-logo"
-                , href "#"
+                [ Attr.class "uk-navbar-item uk-logo"
+                , Attr.href "#"
                 ]
-                [ text "Phx-Elm" ]
+                [ text "IHP-Elm" ]
             , ul
-                [ class "uk-navbar-nav"
+                [ Attr.class "uk-navbar-nav"
                 ]
                 (List.map navItemViewLink data.items)
             ]
         , div
-            [ class "uk-navbar-right uk-margin-right"
+            [ Attr.class "uk-navbar-right uk-margin-right"
             ]
             []
         ]
@@ -195,10 +196,10 @@ navItemViewLink item =
                 ""
     in
     li
-        [ class activeClass
+        [ Attr.class activeClass
         ]
         [ a
-            [ href item.url
+            [ Attr.href item.url
             ]
             [ text item.label ]
         ]
@@ -212,7 +213,7 @@ pageView : String -> NavData -> List (Html Msg) -> Browser.Document Msg
 pageView title nav bodyElems =
     { title = title
     , body =
-        [ div [ class "uk-container uk-margin-left" ]
+        [ div [ Attr.class "uk-container uk-margin-left" ]
             ([ navView nav ]
                 ++ bodyElems
             )
@@ -220,27 +221,18 @@ pageView title nav bodyElems =
     }
 
 
+pageNoNavView : String -> List (Html Msg) -> Browser.Document Msg
+pageNoNavView title bodyElems =
+    { title = title
+    , body =
+        [ div [ Attr.class "uk-container uk-margin-left" ]
+            bodyElems
+        ]
+    }
+
+
 
 -- HELPERS
-
-
-fetchData : Url.Url -> Cmd Msg
-fetchData pageUrl =
-    case pageUrl.path of
-        "/profile" ->
-            Http.get
-                { url = "/GetProfilePageData"
-                , expect = Http.expectJson GotProfilePageData profilePageDecoder
-                }
-
-        "/home" ->
-            Http.get
-                { url = "/GetHomePageData"
-                , expect = Http.expectJson GotHomePageData homePageDecoder
-                }
-
-        _ ->
-            Nav.load "/home"
 
 
 httpErrorToString : Http.Error -> String
@@ -266,3 +258,28 @@ httpErrorToString error =
 
         Http.BadBody errorMessage ->
             errorMessage
+
+
+fetchData : Url.Url -> Cmd Msg
+fetchData pageUrl =
+    case pageUrl.path of
+        "/login" ->
+            Http.get
+                { url = "/GetLoginPageData"
+                , expect = Http.expectJson GotLoginPageData loginPageDecoder
+                }
+
+        "/profile" ->
+            Http.get
+                { url = "/GetProfilePageData"
+                , expect = Http.expectJson GotProfilePageData profilePageDecoder
+                }
+
+        "/home" ->
+            Http.get
+                { url = "/GetHomePageData"
+                , expect = Http.expectJson GotHomePageData homePageDecoder
+                }
+
+        _ ->
+            Nav.load "/home"

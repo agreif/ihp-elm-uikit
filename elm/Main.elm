@@ -69,6 +69,14 @@ update msg model =
         UrlChanged pageUrl ->
             ( model, fetchData pageUrl )
 
+        GotLoginPageData result ->
+            case result of
+                Ok data ->
+                    ( { model | page = LoginPage data }, Cmd.none )
+
+                Err message ->
+                    error model message
+
         GotProfilePageData result ->
             case result of
                 Ok data ->
