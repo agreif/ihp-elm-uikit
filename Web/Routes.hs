@@ -4,6 +4,7 @@ import IHP.RouterPrelude
 import Generated.Types
 import Web.Types
 
+instance AutoRoute RegisterPageController
 instance AutoRoute LoginPageController
 instance AutoRoute HomePageController
 instance AutoRoute ProfilePageController

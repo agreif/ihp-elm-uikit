@@ -11,12 +11,13 @@ theData = PageData
   { title = "Login Page"
   , nav = navData ActiveLoginPage
   , body = BodyData
-    { home = Nothing
-    , profile = Nothing
+    { register = Nothing
     , login = Just $ LoginBodyData
       { login = ""
       , password = ""
       }
+    , home = Nothing
+    , profile = Nothing
     }
   }
 

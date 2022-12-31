@@ -4,6 +4,7 @@ module Common exposing
     , Msg(..)
     , NavData
     , ProfilePageData
+    , RegisterPageData
     , fetchData
     , homePageDecoder
     , httpErrorToString
@@ -30,9 +31,44 @@ import Url
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | GotRegisterPageData (Result Http.Error RegisterPageData)
     | GotLoginPageData (Result Http.Error LoginPageData)
     | GotProfilePageData (Result Http.Error ProfilePageData)
     | GotHomePageData (Result Http.Error HomePageData)
+
+
+
+-- DATA - REGISTER
+
+
+type alias RegisterPageData =
+    { title : String
+    , nav : NavData
+    , register : RegisterBodyData
+    }
+
+
+type alias RegisterBodyData =
+    { login : String
+    , email : String
+    , password : String
+    }
+
+
+registerPageDecoder : J.Decoder RegisterPageData
+registerPageDecoder =
+    J.map3 RegisterPageData
+        (J.field "title" J.string)
+        (J.field "nav" navDecoder)
+        (J.field "body" (J.field "register" registerBodyDecoder))
+
+
+registerBodyDecoder : J.Decoder RegisterBodyData
+registerBodyDecoder =
+    J.map3 RegisterBodyData
+        (J.field "login" J.string)
+        (J.field "email" J.string)
+        (J.field "password" J.string)
 
 
 
@@ -260,9 +296,24 @@ httpErrorToString error =
             errorMessage
 
 
+postForm : String -> Http.Body -> Http.Expect Msg -> Cmd Msg
+postForm dataUrl body expect =
+    Http.post
+        { url = dataUrl
+        , body = body
+        , expect = expect
+        }
+
+
 fetchData : Url.Url -> Cmd Msg
 fetchData pageUrl =
     case pageUrl.path of
+        "/register" ->
+            Http.get
+                { url = "/GetRegisterPageData"
+                , expect = Http.expectJson GotRegisterPageData registerPageDecoder
+                }
+
         "/login" ->
             Http.get
                 { url = "/GetLoginPageData"

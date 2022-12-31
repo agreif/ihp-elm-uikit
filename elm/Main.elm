@@ -9,6 +9,7 @@ import Http
 import Json.Decode as J
 import LoginPage exposing (..)
 import ProfilePage exposing (..)
+import RegisterPage exposing (..)
 import Url
 
 
@@ -40,6 +41,7 @@ type alias Model =
 
 type Page
     = EmptyPage
+    | RegisterPage RegisterPageData
     | LoginPage LoginPageData
     | HomePage HomePageData
     | ProfilePage ProfilePageData
@@ -68,6 +70,14 @@ update msg model =
 
         UrlChanged pageUrl ->
             ( model, fetchData pageUrl )
+
+        GotRegisterPageData result ->
+            case result of
+                Ok data ->
+                    ( { model | page = RegisterPage data }, Cmd.none )
+
+                Err message ->
+                    error model message
 
         GotLoginPageData result ->
             case result of
@@ -115,6 +125,9 @@ subscriptions _ =
 view : Model -> Browser.Document Msg
 view model =
     case model.page of
+        RegisterPage data ->
+            registerPageView data
+
         LoginPage data ->
             loginPageView data
 

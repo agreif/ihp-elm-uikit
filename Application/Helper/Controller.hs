@@ -7,14 +7,25 @@ import IHP.ControllerPrelude
 -- NAV
 
 data ActiveNavItem
-  = ActiveHomePage
-  | ActiveProfilePage
+  = ActiveRegisterPage
   | ActiveLoginPage
+  | ActiveHomePage
+  | ActiveProfilePage
   deriving Eq
 
 navData :: ActiveNavItem -> [NavItemData]
 navData activeNavItem =
   [ NavItemData
+    { label = "Register"
+    , url = "/register"
+    , active = activeNavItem == ActiveRegisterPage
+    }
+  , NavItemData
+    { label = "Login"
+    , url = "/login"
+    , active = activeNavItem == ActiveLoginPage
+    }
+  , NavItemData
     { label = "Home"
     , url = "/home"
     , active = activeNavItem == ActiveHomePage
@@ -23,11 +34,6 @@ navData activeNavItem =
     { label = "Profile"
     , url = "/profile"
     , active = activeNavItem == ActiveProfilePage
-    }
-  , NavItemData
-    { label = "Login"
-    , url = "/login"
-    , active = activeNavItem == ActiveLoginPage
     }
   ]
 
@@ -60,16 +66,33 @@ instance ToJSON NavItemData where
            ]
 
 data BodyData = BodyData
-  { home :: Maybe HomeBodyData
-  , profile :: Maybe ProfileBodyData
+  { register :: Maybe RegisterBodyData
   , login :: Maybe LoginBodyData
+  , home :: Maybe HomeBodyData
+  , profile :: Maybe ProfileBodyData
   }
 
 instance ToJSON BodyData where
   toJSON BodyData{..} =
-    object [ "home" .= home
-           , "profile" .= profile
+    object [ "register" .= register
            , "login" .= login
+           , "home" .= home
+           , "profile" .= profile
+           ]
+
+-- REGISTER DATA
+
+data RegisterBodyData = RegisterBodyData
+  { login :: Text
+  , email :: Text
+  , password :: Text
+  }
+
+instance ToJSON RegisterBodyData where
+  toJSON RegisterBodyData{..} =
+    object [ "login" .= login
+           , "email" .= email
+           , "password" .= password
            ]
 
 -- LOGIN DATA

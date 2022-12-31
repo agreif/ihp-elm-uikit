@@ -11,11 +11,12 @@ theData = PageData
   { title = "Home Page"
   , nav = navData ActiveHomePage
   , body = BodyData
-    { home = Just $ HomeBodyData
+    { register = Nothing
+    , login = Nothing
+    , home = Just $ HomeBodyData
       { text = "Home Page Body..."
       }
     , profile = Nothing
-    , login = Nothing
     }
   }
 
