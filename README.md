@@ -18,4 +18,4 @@ with
 Each click (either in the navigation or somewhere else) results in a JSON data reload that results in the right DOM manipulation
 
 ## UIKit
-(https://getuikit.com/)more infos, see [https://getuikit.com]
+more infos, see [https://getuikit.com/](https://getuikit.com)
