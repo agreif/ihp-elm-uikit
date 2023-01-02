@@ -24,33 +24,16 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlChange = UrlChanged
-        , onUrlRequest = LinkClicked
+        , onUrlChange = MsgUrlChanged
+        , onUrlRequest = MsgLinkClicked
         }
-
-
-
--- MODEL
-
-
-type alias Model =
-    { key : Nav.Key
-    , page : Page
-    }
-
-
-type Page
-    = EmptyPage
-    | RegisterPage RegisterPageData
-    | LoginPage LoginPageData
-    | HomePage HomePageData
-    | ProfilePage ProfilePageData
-    | ErrorPage String
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags pageUrl key =
-    ( Model key EmptyPage, Nav.pushUrl key pageUrl.path )
+    ( Model key EmptyPage NoForm
+    , Nav.pushUrl key pageUrl.path
+    )
 
 
 
@@ -60,7 +43,7 @@ init flags pageUrl key =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        LinkClicked urlRequest ->
+        MsgLinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal pageUrl ->
                     ( model, Nav.pushUrl model.key (Url.toString pageUrl) )
@@ -68,18 +51,26 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        UrlChanged pageUrl ->
+        MsgUrlChanged pageUrl ->
             ( model, fetchData pageUrl )
 
-        GotRegisterPageData result ->
+        MsgGotRegisterPageData result ->
             case result of
                 Ok data ->
-                    ( { model | page = RegisterPage data }, Cmd.none )
+                    ( { model
+                        | page = RegisterPage data
+                        , form = RegisterForm { login = "", email = "", password = "" }
+                      }
+                    , Cmd.none
+                    )
 
                 Err message ->
                     error model message
 
-        GotLoginPageData result ->
+        MsgChangedRegisterForm field ->
+            updateModelRegisterForm model field
+
+        MsgGotLoginPageData result ->
             case result of
                 Ok data ->
                     ( { model | page = LoginPage data }, Cmd.none )
@@ -87,7 +78,7 @@ update msg model =
                 Err message ->
                     error model message
 
-        GotProfilePageData result ->
+        MsgGotProfilePageData result ->
             case result of
                 Ok data ->
                     ( { model | page = ProfilePage data }, Cmd.none )
@@ -95,7 +86,7 @@ update msg model =
                 Err message ->
                     error model message
 
-        GotHomePageData result ->
+        MsgGotHomePageData result ->
             case result of
                 Ok data ->
                     ( { model | page = HomePage data }, Cmd.none )

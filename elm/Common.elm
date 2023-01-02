@@ -1,8 +1,12 @@
 module Common exposing
-    ( HomePageData
+    ( Form(..)
+    , HomePageData
     , LoginPageData
+    , Model
     , Msg(..)
+    , MsgRegisterFormField(..)
     , NavData
+    , Page(..)
     , ProfilePageData
     , RegisterPageData
     , fetchData
@@ -25,16 +29,48 @@ import Url
 
 
 
+-- MODEL
+
+
+type alias Model =
+    { key : Nav.Key
+    , page : Page
+    , form : Form
+    }
+
+
+type Page
+    = EmptyPage
+    | RegisterPage RegisterPageData
+    | LoginPage LoginPageData
+    | HomePage HomePageData
+    | ProfilePage ProfilePageData
+    | ErrorPage String
+
+
+type Form
+    = NoForm
+    | RegisterForm { login : String, email : String, password : String }
+
+
+
 -- MSG
 
 
 type Msg
-    = LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
-    | GotRegisterPageData (Result Http.Error RegisterPageData)
-    | GotLoginPageData (Result Http.Error LoginPageData)
-    | GotProfilePageData (Result Http.Error ProfilePageData)
-    | GotHomePageData (Result Http.Error HomePageData)
+    = MsgLinkClicked Browser.UrlRequest
+    | MsgUrlChanged Url.Url
+    | MsgGotRegisterPageData (Result Http.Error RegisterPageData)
+    | MsgChangedRegisterForm MsgRegisterFormField
+    | MsgGotLoginPageData (Result Http.Error LoginPageData)
+    | MsgGotProfilePageData (Result Http.Error ProfilePageData)
+    | MsgGotHomePageData (Result Http.Error HomePageData)
+
+
+type MsgRegisterFormField
+    = MsgFieldLogin String
+    | MsgFieldEmail String
+    | MsgFieldPassword String
 
 
 
@@ -311,25 +347,25 @@ fetchData pageUrl =
         "/register" ->
             Http.get
                 { url = "/GetRegisterPageData"
-                , expect = Http.expectJson GotRegisterPageData registerPageDecoder
+                , expect = Http.expectJson MsgGotRegisterPageData registerPageDecoder
                 }
 
         "/login" ->
             Http.get
                 { url = "/GetLoginPageData"
-                , expect = Http.expectJson GotLoginPageData loginPageDecoder
+                , expect = Http.expectJson MsgGotLoginPageData loginPageDecoder
                 }
 
         "/profile" ->
             Http.get
                 { url = "/GetProfilePageData"
-                , expect = Http.expectJson GotProfilePageData profilePageDecoder
+                , expect = Http.expectJson MsgGotProfilePageData profilePageDecoder
                 }
 
         "/home" ->
             Http.get
                 { url = "/GetHomePageData"
-                , expect = Http.expectJson GotHomePageData homePageDecoder
+                , expect = Http.expectJson MsgGotHomePageData homePageDecoder
                 }
 
         _ ->

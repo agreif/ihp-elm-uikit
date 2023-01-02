@@ -1,10 +1,57 @@
-module RegisterPage exposing (registerPageView)
+module RegisterPage exposing
+    ( registerPageView
+    , updateModelRegisterForm
+    )
 
 import Browser
 import Common exposing (..)
 import Html exposing (..)
 import Html.Attributes as Attr
+import Html.Events as Event
 import Json.Decode as J
+
+
+updateModelRegisterForm : Model -> MsgRegisterFormField -> ( Model, Cmd Msg )
+updateModelRegisterForm model field =
+    let
+        form =
+            case model.form of
+                RegisterForm rec ->
+                    case field of
+                        MsgFieldLogin val ->
+                            RegisterForm { rec | login = val }
+
+                        MsgFieldEmail val ->
+                            RegisterForm { rec | email = val }
+
+                        MsgFieldPassword val ->
+                            RegisterForm { rec | password = val }
+
+                _ ->
+                    NoForm
+    in
+    ( { model | form = form }, Cmd.none )
+
+
+type Field
+    = Login
+    | Email
+    | Password
+
+
+fieldChanged : Field -> String -> Msg
+fieldChanged field val =
+    MsgChangedRegisterForm
+        (case field of
+            Login ->
+                MsgFieldLogin val
+
+            Email ->
+                MsgFieldEmail val
+
+            Password ->
+                MsgFieldPassword val
+        )
 
 
 registerPageView : RegisterPageData -> Browser.Document Msg
@@ -57,6 +104,7 @@ registerPageView data =
                                                 , Attr.name "login"
                                                 , Attr.class "uk-input uk-form-large"
                                                 , Attr.placeholder "Login"
+                                                , Event.onInput (fieldChanged Login)
                                                 ]
                                                 []
                                             ]
@@ -86,9 +134,9 @@ registerPageView data =
                                             , input
                                                 [ Attr.type_ "text"
                                                 , Attr.name "email"
-                                                , Attr.value ""
                                                 , Attr.class "uk-input uk-form-large"
                                                 , Attr.placeholder "Email"
+                                                , Event.onInput (fieldChanged Email)
                                                 ]
                                                 []
                                             ]
@@ -120,6 +168,7 @@ registerPageView data =
                                                 , Attr.name "password"
                                                 , Attr.class "uk-input uk-form-large"
                                                 , Attr.placeholder "Password"
+                                                , Event.onInput (fieldChanged Password)
                                                 ]
                                                 []
                                             ]
