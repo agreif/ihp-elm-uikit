@@ -8,6 +8,7 @@ module Common exposing
     , NavData
     , Page(..)
     , ProfilePageData
+    , RegisterFormRec
     , RegisterPageData
     , fetchData
     , homePageDecoder
@@ -50,7 +51,11 @@ type Page
 
 type Form
     = NoForm
-    | RegisterForm { login : String, email : String, password : String }
+    | RegisterForm RegisterFormRec
+
+
+type alias RegisterFormRec =
+    { login : String, email : String, password : String }
 
 
 

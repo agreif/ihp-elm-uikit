@@ -57,9 +57,18 @@ update msg model =
         MsgGotRegisterPageData result ->
             case result of
                 Ok data ->
-                    ( { model
+                    ( let
+                        pageData =
+                            data.register
+                      in
+                      { model
                         | page = RegisterPage data
-                        , form = RegisterForm { login = "", email = "", password = "" }
+                        , form =
+                            RegisterForm
+                                { login = pageData.login
+                                , email = pageData.email
+                                , password = pageData.password
+                                }
                       }
                     , Cmd.none
                     )
@@ -115,21 +124,24 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    case model.page of
-        RegisterPage data ->
-            registerPageView data
+    case ( model.page, model.form ) of
+        ( RegisterPage data, RegisterForm formRec ) ->
+            registerPageView data formRec
 
-        LoginPage data ->
+        ( LoginPage data, _ ) ->
             loginPageView data
 
-        HomePage data ->
+        ( HomePage data, _ ) ->
             homePageView data
 
-        ProfilePage data ->
+        ( ProfilePage data, _ ) ->
             profilePageView data
 
-        EmptyPage ->
+        ( EmptyPage, _ ) ->
             { title = "", body = [] }
 
-        ErrorPage message ->
+        ( ErrorPage message, _ ) ->
             errorPageView message
+
+        _ ->
+            errorPageView "view not found"

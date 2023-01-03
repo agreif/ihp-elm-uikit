@@ -54,12 +54,8 @@ fieldChanged field val =
         )
 
 
-registerPageView : RegisterPageData -> Browser.Document Msg
-registerPageView data =
-    let
-        register =
-            data.register
-    in
+registerPageView : RegisterPageData -> RegisterFormRec -> Browser.Document Msg
+registerPageView data formRec =
     pageNoNavView
         data.title
         [ div
@@ -102,6 +98,7 @@ registerPageView data =
                                             , input
                                                 [ Attr.type_ "text"
                                                 , Attr.name "login"
+                                                , Attr.value formRec.login
                                                 , Attr.class "uk-input uk-form-large"
                                                 , Attr.placeholder "Login"
                                                 , Event.onInput (fieldChanged Login)
