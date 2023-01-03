@@ -1,6 +1,5 @@
 module Common exposing
-    ( Form(..)
-    , HomePageData
+    ( HomePageData
     , LoginPageData
     , Model
     , Msg(..)
@@ -10,6 +9,7 @@ module Common exposing
     , ProfilePageData
     , RegisterFormRec
     , RegisterPageData
+    , UserInput(..)
     , fetchData
     , homePageDecoder
     , httpErrorToString
@@ -36,7 +36,7 @@ import Url
 type alias Model =
     { key : Nav.Key
     , page : Page
-    , form : Form
+    , userInput : UserInput
     }
 
 
@@ -49,8 +49,8 @@ type Page
     | ErrorPage String
 
 
-type Form
-    = NoForm
+type UserInput
+    = NoUserInput
     | RegisterForm RegisterFormRec
 
 

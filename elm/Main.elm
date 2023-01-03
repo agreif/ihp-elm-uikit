@@ -31,7 +31,7 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags pageUrl key =
-    ( Model key EmptyPage NoForm
+    ( Model key EmptyPage NoUserInput
     , Nav.pushUrl key pageUrl.path
     )
 
@@ -63,7 +63,7 @@ update msg model =
                       in
                       { model
                         | page = RegisterPage data
-                        , form =
+                        , userInput =
                             RegisterForm
                                 { login = pageData.login
                                 , email = pageData.email
@@ -124,7 +124,7 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    case ( model.page, model.form ) of
+    case ( model.page, model.userInput ) of
         ( RegisterPage data, RegisterForm formRec ) ->
             registerPageView data formRec
 

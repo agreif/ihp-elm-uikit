@@ -15,7 +15,7 @@ updateModelRegisterForm : Model -> MsgRegisterFormField -> ( Model, Cmd Msg )
 updateModelRegisterForm model field =
     let
         form =
-            case model.form of
+            case model.userInput of
                 RegisterForm rec ->
                     case field of
                         MsgFieldLogin val ->
@@ -28,9 +28,9 @@ updateModelRegisterForm model field =
                             RegisterForm { rec | password = val }
 
                 _ ->
-                    NoForm
+                    NoUserInput
     in
-    ( { model | form = form }, Cmd.none )
+    ( { model | userInput = form }, Cmd.none )
 
 
 type Field
